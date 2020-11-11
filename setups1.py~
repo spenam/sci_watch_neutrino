@@ -35,7 +35,6 @@ wscatt=np.loadtxt("water_scatt_rayleight.txt").transpose()
 QE=qe[1][find_nearest_index(qe[0],wl)]*0.01
 Lscat=wscatt[1][find_nearest_index(wscatt[0],wl)]
 Labs=wabs[1][find_nearest_index(wabs[0],wl)]
-print(QE, Lscat, Labs, Cl)
 
 def count_rate(lambda0, d0, x0, delta0, alfa0, beta0, b0):
     """
@@ -110,11 +109,6 @@ ds=np.linspace(100,350,100)
 #	print (np.cos(i), integral(350.0,i))
 
 const=QE*C0*Cl*Apmt
-print("QE= ", QE)
-print("C0= ", C0)
-print("Cl= ", Cl)
-print("Apmt= ", Apmt)
-print("const= ",const)
 header="#for lambda=500nm\n#cos(delta)	rate".format(d)
 fil = open("counts_distance{}m.txt".format(int(d)),"wb")
 np.savetxt(fil, [], header=header)

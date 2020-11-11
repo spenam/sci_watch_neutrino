@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import argparse
 parser=argparse.ArgumentParser()
-parser.add_argument("--distance", type=float, help="Insert distance of source from PMT", default=350)
+parser.add_argument("--wavelength", type=float, help="Insert wavelength of the source in nm, default is 500nm", default=500)
 args=parser.parse_args()
-wl=500.0
-d=args.distance
+wl=args.wavelength
+
 def find_nearest_index(array, value):
 	array = np.asarray(array)
 	idx = (np.abs(array - value)).argmin()
@@ -35,6 +35,7 @@ wscatt=np.loadtxt("water_scatt_rayleight.txt").transpose()
 QE=qe[1][find_nearest_index(qe[0],wl)]*0.01
 Lscat=wscatt[1][find_nearest_index(wscatt[0],wl)]
 Labs=wabs[1][find_nearest_index(wabs[0],wl)]
+print(QE, Lscat, Labs, Cl)
 
 def count_rate(lambda0, d0, x0, delta0, alfa0, beta0, b0):
     """
@@ -97,7 +98,7 @@ def integrand_s2(s0,delta0,d0):
 def integral_s1(d0,delta0):
 	return integrate.quad(integrand_s1, 0., 500., args=(d0, delta0))[0]
 def integral_s2(d0):
-	return integrate.nquad(integrand_s2, [[0.,500.],[-np.pi/2., np.pi/2.]], args=[d0])[0]
+	return integrate.nquad(integrand_s2, [[0.,500.],[0., np.pi/2.]], args=[d0])[0]
 
 
 vecintegra=np.vectorize(integral_s2)
@@ -109,10 +110,10 @@ ds=np.linspace(100,350,100)
 #	print (np.cos(i), integral(350.0,i))
 
 const=QE*C0*Cl*Apmt
-header="#for lambda=500nm\n#cos(delta)	rate".format(d)
-fil = open("data_setup1/counts_distance{}m.txt".format(int(d)),"wb")
+header="#for lambda={}nm\n#Distance	rate".format(wl)
+fil = open("counts_lambda{}nm.txt".format(int(wl)),"wb")
 np.savetxt(fil, [], header=header)
-for i in deltas:
-	data=np.column_stack((np.cos(i),const*integral_s1(d,i)))
+for i in ds:
+	data=np.column_stack((i,const*integral_s2(i)))
 	np.savetxt(fil, data)
 fil.close()

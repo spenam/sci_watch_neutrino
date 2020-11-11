@@ -111,7 +111,7 @@ ds=np.linspace(100,350,100)
 
 const=QE*C0*Cl*Apmt
 header="#for lambda={}nm\n#Distance	rate".format(wl)
-fil = open("counts_lambda{}nm.txt".format(int(wl)),"wb")
+fil = open("data_setup2/counts_lambda{}nm.txt".format(int(wl)),"wb")
 np.savetxt(fil, [], header=header)
 for i in ds:
 	data=np.column_stack((i,const*integral_s2(i)))

@@ -100,6 +100,9 @@ def integral_s1(d0,delta0):
 def integral_s2(d0):
 	return integrate.nquad(integrand_s2, [[0.,500.],[0., np.pi/2.]], args=[d0])[0]
 
+def integrand_s3(d0):
+	return (np.exp(-(d0)/Labs)*ang[1][find_nearest_index(ang[0],np.cos(0))]*1./d0**2./(4.*np.pi))
+
 
 vecintegra=np.vectorize(integral_s2)
 deltas=np.linspace(-np.pi+0.01,np.pi-0.01,100)
@@ -111,9 +114,9 @@ ds=np.linspace(100,350,100)
 
 const=QE*C0*Cl*Apmt
 header="#for lambda={}nm\n#Distance	rate".format(wl)
-fil = open("counts_lambda{}nm.txt".format(int(wl)),"wb")
+fil = open("data_setup3/counts_lambda{}nm.txt".format(int(wl)),"wb")
 np.savetxt(fil, [], header=header)
 for i in ds:
-	data=np.column_stack((i,const*integral_s2(i)))
+	data=np.column_stack((i,const*integrand_s3(i)))
 	np.savetxt(fil, data)
 fil.close()

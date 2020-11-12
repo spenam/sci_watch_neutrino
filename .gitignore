@@ -130,3 +130,5 @@ dmypy.json
 
 # Vim buffers
 *~
+.*
+!.gitignore

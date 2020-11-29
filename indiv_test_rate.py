@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import argparse
 parser=argparse.ArgumentParser()
-parser.add_argument("--distance", type=float, help="Insert distance of the source from PMT", default=350)
+#parser.add_argument("--wavelength", type=float, help="Insert wavelength of the source in nm, default is 500nm", default=500)
+parser.add_argument("--distance", type=float, help="Insert  distance of source from PMT, default is 250m", default=250)
 args=parser.parse_args()
+#wl=args.wavelength
 wl=500.0
 d=args.distance
 
@@ -38,7 +40,7 @@ wscatt=np.loadtxt("water_scatt_rayleight.txt").transpose()
 QE=qe[1][find_nearest_index(qe[0],wl)]*0.01
 Lscat=wscatt[1][find_nearest_index(wscatt[0],wl)]
 Labs=wabs[1][find_nearest_index(wabs[0],wl)]
-print(QE, Lscat, Labs, Cl)
+#print(QE, Lscat, Labs, Cl)
 
 def count_rate(lambda0, d0, x0, delta0, alfa0, beta0, b0):
     """
@@ -90,56 +92,57 @@ def Pabs(lambda0,s0,x0):
 
 def integrand_s1(s0,d0,delta0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
+	beta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
+	alfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
+	return (np.exp(-(s0+coslaw)/Labs)
+		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(np.arcsin(s0*np.sin(delta0)/coslaw)))]
+		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.)
+def integrand_test(s0,d0,delta0):
+	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
 	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
 	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
-	return (np.exp(-(s0+coslaw)/Labs)
-		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
-		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.)
+	return coslaw#(np.exp(-(s0+coslaw)/Labs))
+	#	*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
+	#	*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.)
+
 def integrand_s2(s0,delta0,d0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
-	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
-	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
 	return (np.exp(-(s0+coslaw)/Labs)
-		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
-		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.*np.sin(delta0))
-def integrand_s3(s0,delta0,d0,theta0):
-	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
-	return (np.exp(-(s0+coslaw)/Labs)
-		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(theta0-np.arcsin(s0*np.sin(delta0)/coslaw)))]
+		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(np.arcsin(s0*np.sin(delta0)/coslaw)))]
 		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.*np.sin(delta0))
-
-
 def integral_s1(d0,delta0):
 	return integrate.quad(integrand_s1, 0., 500., args=(d0, delta0))[0]
+def integral_test(d0,delta0):
+	return integrate.quad(integrand_test, 0., 500., args=(d0, delta0))[0]
 def integral_s2(d0):
 	return integrate.nquad(integrand_s2, [[0.,500.],[0., np.pi/2.]], args=[d0])[0]
-def integral_s3(d0,theta0):
-	return integrate.nquad(integrand_s3, [[0.,500.],[0., np.pi/2.]], args=(d0,theta0))[0]
-
 
 
 vecintegra=np.vectorize(integral_s2)
 deltas=np.linspace(-np.pi+0.01,np.pi-0.01,100)
 ds=np.linspace(100,350,100)
-thetas=np.linspace(0,np.pi,100)
 #print("#for d=350m lambda=500nm")
 #print("#cos(delta)	rate")
 #for i in deltas:
 #	print (np.cos(i), integral(350.0,i))
 
 const=QE*C0*Cl*Apmt
+print("rate ", const*integral_s1(d,np.arccos(0.4)))
+print("part ", integral_test(d,np.arccos(0.4)))
+#print("new rate ",const*integral_test(d,np.arccos(0.4)))
+#header="#for lambda=500nm\n#cos(delta)	rate".format(d)
+#fil = open("data_setup1/counts_distance{}m.txt".format(int(d)),"wb")
 #header="#for lambda={}nm\n#Distance	rate".format(wl)
 #fil = open("data_setup2/counts_lambda{}nm.txt".format(int(wl)),"wb")
 #np.savetxt(fil, [], header=header)
+#for i in deltas:
+#	data=np.column_stack((np.cos(i),const*integral_s1(d,i)))
+#	if i>0.38:
+#		if i<0.42:
+#			print(const*integral_s1(d,i))
+#	np.savetxt(fil,data)
+#fil.close()
 #for i in ds:
 #	data=np.column_stack((i,const*integral_s2(i)))
 #	np.savetxt(fil, data)
 #fil.close()
-
-header="#for lambda=500nm\n#Theta	rate".format(d)
-fil = open("data_test/counts_distance{}m.txt".format(int(d)),"wb")
-np.savetxt(fil, [], header=header)
-for i in thetas:
-	data=np.column_stack((np.cos(i),const*integral_s3(d,i)))
-	np.savetxt(fil, data)
-fil.close()

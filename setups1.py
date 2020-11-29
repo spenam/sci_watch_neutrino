@@ -92,14 +92,19 @@ def Pabs(lambda0,s0,x0):
 
 def integrand_s1(s0,d0,delta0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
+	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
+	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
 	return (np.exp(-(s0+coslaw)/Labs)
-		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(np.arcsin(s0*np.sin(delta0)/coslaw)))]
-		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.)
+		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
+		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.)
 def integrand_s2(s0,delta0,d0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
+	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
+	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
 	return (np.exp(-(s0+coslaw)/Labs)
-		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(np.arcsin(s0*np.sin(delta0)/coslaw)))]
-		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.*np.sin(delta0))
+		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
+		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.*np.sin(delta0))
+	
 def integral_s1(d0,delta0):
 	return integrate.quad(integrand_s1, 0., 500., args=(d0, delta0))[0]
 def integral_s2(d0):

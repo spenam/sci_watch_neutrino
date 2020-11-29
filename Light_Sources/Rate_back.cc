@@ -51,6 +51,7 @@ int main(int argc, char *argv[]){
    int nmet  = 1; // step width (m)
 
    double rate = 0;
+   double part = 0;
    for (int j=0;j<ndist;j++) {
     double xm = (j+0.05)*nmet; // mean distance of bin
     double Psca = nmet/xs*exp(-xm/xs); // probability of scattering inside bin
@@ -65,7 +66,9 @@ int main(int argc, char *argv[]){
      double PSAng  = xSca->PAng(cosa); // probability for angular scattering [1/sr]
      double PxAng  = xAng->Get(cosb); // probability for photon on PMT
      rate   += ratdef * human * lum * Aeff3inch/y/y * Pabs * Psca * PSAng * PxAng * Pq / Nbct;
+     part +=0;
     }
    }
  cout << "Rate " << rate << " Hz " << endl;
+ cout << "part " << part << endl;
 }

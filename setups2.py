@@ -4,8 +4,11 @@ import scipy.integrate as integrate
 import argparse
 parser=argparse.ArgumentParser()
 parser.add_argument("--wavelength", type=float, help="Insert wavelength of the source in nm, default is 500nm", default=500)
+#parser.add_argument("--distance", type=float, help="Insert  distance of source from PMT, default is 350m", default=350)
 args=parser.parse_args()
 wl=args.wavelength
+#wl=500.0
+#d=args.distance
 
 def find_nearest_index(array, value):
 	array = np.asarray(array)
@@ -96,7 +99,7 @@ def integrand_s2(s0,delta0,d0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
 	return (np.exp(-(s0+coslaw)/Labs)
 		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(np.arcsin(s0*np.sin(delta0)/coslaw)))]
-		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.)
+		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.*np.sin(delta0))
 def integral_s1(d0,delta0):
 	return integrate.quad(integrand_s1, 0., 500., args=(d0, delta0))[0]
 def integral_s2(d0):
@@ -112,9 +115,15 @@ ds=np.linspace(100,350,100)
 #	print (np.cos(i), integral(350.0,i))
 
 const=QE*C0*Cl*Apmt
+#header="#for lambda=500nm\n#cos(delta)	rate".format(d)
+#fil = open("data_setup1/counts_distance{}m.txt".format(int(d)),"wb")
 header="#for lambda={}nm\n#Distance	rate".format(wl)
 fil = open("data_setup2/counts_lambda{}nm.txt".format(int(wl)),"wb")
 np.savetxt(fil, [], header=header)
+#for i in deltas:
+#	data=np.column_stack((np.cos(i),const*integral_s1(d,i)))
+#	np.savetxt(fil,data)
+#fil.close()
 for i in ds:
 	data=np.column_stack((i,const*integral_s2(i)))
 	np.savetxt(fil, data)

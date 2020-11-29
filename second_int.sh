@@ -3,3 +3,4 @@ do
 	echo Doing integral for lambda=$i nm
 	python setups2.py --wavelength $i
 done
+python plots_2.py

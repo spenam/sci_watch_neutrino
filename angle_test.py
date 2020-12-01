@@ -104,9 +104,11 @@ def integrand_s2(s0,delta0,d0):
 		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.*np.sin(delta0))
 def integrand_s3(s0,delta0,d0,theta0):
 	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
+	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
+	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
 	return (np.exp(-(s0+coslaw)/Labs)
 		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],np.cos(theta0-np.arcsin(s0*np.sin(delta0)/coslaw)))]
-		*f*(1.+b*np.cos(d0*np.sin(delta0)/coslaw)**2.)*1./coslaw**2.*np.sin(delta0))
+		*f*(1.+b*cosbeta**2.)*1./coslaw**2.*np.sin(delta0))
 
 
 def integral_s1(d0,delta0):

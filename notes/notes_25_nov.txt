@@ -1,0 +1,15 @@
+to do
+
+- azimuth angle integration
+- arbitrary photomultiplier firections
+- compare codes
+- include azimuth integrations
+- look for ray tracing scattering online
+
+my thoughts
+
+- shouldnt there be a 4pi in the numerator of the equation from implicit solid
+  angle integration?
+
+
+

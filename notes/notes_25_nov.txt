@@ -11,5 +11,11 @@ my thoughts
 - shouldnt there be a 4pi in the numerator of the equation from implicit solid
   angle integration?
 
+** 2 December **
+
+- Try doing the bining for the sections of the PMT sphere as in brunner's
+  presentation.
+- Check the PhD thesis brunner sent for montecarlo integration.
+
 
 

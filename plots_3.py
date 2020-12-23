@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+matplotlib.rcParams.update({'font.size':14})
 fig, ax= plt.subplots()
 for i in [350,400,450,500,525,550,600]:
 	data=np.genfromtxt("data_setup3/counts_lambda{}nm.txt".format(i)).transpose()

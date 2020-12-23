@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+matplotlib.rcParams.update({'font.size':14})
 fig, ax= plt.subplots()
 for i in [100,150,200,250,300,350]:
 	data=np.genfromtxt("data_setup1/counts_distance{}m.txt".format(i)).transpose()

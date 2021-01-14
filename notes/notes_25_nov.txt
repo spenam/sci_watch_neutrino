@@ -17,5 +17,8 @@ my thoughts
   presentation.
 - Check the PhD thesis brunner sent for montecarlo integration.
 
+** Meeting 13 January ** :
 
-
+- write again the document using brunner's corrections sent by email
+- reproduce some numbers on the slides
+- opening angle is 30 degree and the omt changes the 

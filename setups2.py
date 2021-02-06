@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import argparse
 parser=argparse.ArgumentParser()
-parser.add_argument("--wavelength", type=float, help="Insert wavelength of the source in nm, default is 500nm", default=500)
+parser.add_argument("--wavelength", type=float, help="Insert wavelength of the source in nm, default is 550nm", default=550)
 #parser.add_argument("--distance", type=float, help="Insert  distance of source from PMT, default is 350m", default=350)
 args=parser.parse_args()
 wl=args.wavelength
@@ -98,12 +98,13 @@ def integrand_s1(s0,d0,delta0):
 		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
 		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.)
 def integrand_s2(s0,delta0,d0):
-	coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
-	cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
-	cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
-	return (np.exp(-(s0+coslaw)/Labs)
+    coslaw=np.sqrt(s0**2.+d0**2.+2.*s0*d0*np.cos(delta0))
+    cosbeta=(-d0*d0+s0*s0+coslaw*coslaw)/(2.0*s0*coslaw)
+    cosalfa=(d0*d0-s0*s0+coslaw*coslaw)/(2.0*d0*coslaw)
+    #print ("area= ", Apmt/(coslaw**2.),"Pabs= ",np.exp(-(s0+coslaw)/Labs),"Psca= ", np.exp(-s0/Lscat)/Lscat,"Psang= ",f*(1.+b*(cosbeta)**2.), "Pxang= ", ang[1][find_nearest_index(ang[0],cosalfa)])
+    return (np.exp(-(s0+coslaw)/Labs)
 		*(np.exp(-s0/Lscat)/Lscat)*ang[1][find_nearest_index(ang[0],cosalfa)]
-		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.*np.sin(delta0))
+		*f*(1.+b*(cosbeta)**2.)*1./coslaw**2.*np.sin(delta0))#,Apmt/(coslaw**2.),np.exp(-(s0+coslaw)/Labs),np.exp(-s0/Lscat)/Lscat,f*(1.+b*(cosbeta)**2.))
 def integral_s1(d0,delta0):
 	return integrate.quad(integrand_s1, 0., 500., args=(d0, delta0))[0]
 def integral_s2(d0):
@@ -113,6 +114,7 @@ def integral_s2(d0):
 vecintegra=np.vectorize(integral_s2)
 deltas=np.linspace(-np.pi+0.01,np.pi-0.01,100)
 ds=np.linspace(100,350,100)
+ds=100.
 #print("#for d=350m lambda=500nm")
 #print("#cos(delta)	rate")
 #for i in deltas:

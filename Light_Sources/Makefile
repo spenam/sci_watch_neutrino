@@ -19,9 +19,6 @@ W_Abs.o : W_Abs.cc
 W_Sca.o : W_Sca.cc
 	g++ ${OPT} -c -o $@ ${ROOTINCL} -I${INC_PMT} $<
 
-libPMT.so : PMT_QE.o PMT_Ang.o W_Abs.o W_Sca.o
-	g++ -shared -o $@ $^
-
 Rate_head.o : Rate_head.cc
 	g++ ${OPT} -c -o $@ ${ROOTINCL} -I${INC_PMT} $<
 
@@ -37,8 +34,13 @@ Rate : Rate.o
 Rate_back.o : Rate_back.cc
 	g++ ${OPT} -c -o $@ ${ROOTINCL} -I${INC_PMT} $<
 
+
 Rate_back : Rate_back.o
 	g++ -o $@ libPMT.so ${ROOTLIBS} $<
+
+libPMT.so : PMT_QE.o PMT_Ang.o W_Abs.o W_Sca.o
+	g++ -shared -o $@ $^
+
 
 clean: 
 	rm *.o

@@ -13,10 +13,10 @@ int main(int argc, char *argv[]){
  double pi = 3.14159265359;
  double Aeff3inch = 0.004536; // effective area 3inch PMT [m^2]
  double ratdef = 4.11e15; // photon rate 1 lumen
-
+ ratdef = 8e17;
  double ctmin = -1.;
- double ctmax =  0; 
- //double ctmax = -0.866; // 30deg 
+ //double ctmax =  0; 
+ double ctmax = -0.866; // 30deg 
  int Nbct = 1000;
  double delct=(ctmax-ctmin)/Nbct;
 

@@ -22,3 +22,15 @@ my thoughts
 - write again the document using brunner's corrections sent by email
 - reproduce some numbers on the slides
 - opening angle is 30 degree and the omt changes the 
+
+
+** Meeting 10 February ** :
+
+- Read paper on ANTARES measurements of sea water properties and understand
+  why their measurements are not very precise.
+- Do a minimization process on the values calculated by the code that
+  calculates the rates by adjusting the absorption length and the overall
+factor.
+- Check how Geant4 might be implemented in our case
+- Work on the draft report from last semester.
+- Send email to authors of the julia CloudScat.jl package.

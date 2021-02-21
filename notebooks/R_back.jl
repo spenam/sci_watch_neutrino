@@ -17,6 +17,9 @@ qe = readdlm("../pmt_qe_interp.txt",skipstart=1); # quantum efficiency data
 qe[:,2]=qe[:,2]*0.01;
 wabs = readdlm("../water_abs_interp.txt",skipstart=1); # absorption length data
 wscatt = readdlm("../water_scatt_rayleight.txt",skipstart=1); # scattering length data
+
+function main(ang,qe,wabs,wscatt)
+
 b=Float64(0.835); # parameter b of the scattering
 lam = Float64(446); #Wavelength (nm)
 xa = wabs[searchsortednearest(wabs[1:end,1],lam),2]; # absorption length
@@ -27,7 +30,7 @@ human = Float64(1); # Human eye conversion factor
 lum = Float64(1); # Brightness (lm)
 dist = Float64(400); # Distance
 
-eff3inch = Float64(0.004536); # Effective area 3inch PMT [m^2]
+Aeff3inch = Float64(0.004536); # Effective area 3inch PMT [m^2]
 ratdef = Float64(4.11e15); #photon rate 1 lumen
 #ratdef = 8e17; # photon rate for the ROV
 #ratdef = 9*10^18; # photon rate for the ROV
@@ -48,8 +51,8 @@ rate = Float64(0);
 
 ratesum = Float64(0); # sum of individual rates 
 #loop over distance bins
-ndist = Float64(500); # steps over 500m
-nmet = Float64(1); #step width
+ndist = Float64(1000); # steps over 500m
+nmet = Float64(5); #step width
 pmtsteps=Int32(1);#100 #number of steps to average the value
 sector=[0.,1.,2.,3.,4.,5.] # what part of the hemisphere you are looking
 AngPMTStep = Float64(pi/(pmtsteps*1.0));
@@ -70,10 +73,12 @@ for kk = 1:6
 			azim=(m+0.5)/AzimStep;
 		for j = 0:ndist-1
 			xm = (j+0.05)*nmet; # mean distance of bin
-		Psca = nmet/xs*exp(-xm/xs); # probability of scattering inside the bin
+			#Here
+			Psca = nmet/xs*exp(-xm/xs); # probability of scattering inside the bin
 		for l=0:Nbct-1
 			ct= ctmin + (l+0.5)*delct;
 			y=sqrt(dist*dist+xm*xm-2. *dist*xm*ct); # distance from scattering to PMT
+			#Here
 			Pabs = exp(-(y+xm)/xa); # probability of non-absorption on full photon path
 			cosa = (-dist*dist + xm*xm + y*y)/(2. *xm*y); # scattering angle
 			cosb = (-xm*xm + y*y + dist*dist)/(2. *y*dist); # PMT-photon angle
@@ -88,7 +93,10 @@ for kk = 1:6
 			println(ct, " ", cosa, " ", cosb)
 			end
 			PSAng = f*(1. +b*(cosa)^2.) # probability for angular scattering
-			PxAng = ang[searchsortednearest(ang[1:end,1],cosx),2] # probability for photon on PMT
+			#a = @allocated begin
+			#Here
+			PxAng = ang[searchsortednearest(@view(ang[1:end,1]),cosx),2] # probability for photon on PMT
+			#end; a > 0 && println(a) # prints a if the blocks allocates
 			rate += ratdef * human * lum * Aeff3inch/y/y * Pabs * Psca * PSAng * PxAng * Pq / Nbct / Nazim;
 			#part += 0;
 			end
@@ -100,3 +108,6 @@ for kk = 1:6
 	println("For the sector= ", sector[kk], ", Rate ", ratesum/pmtsteps, "Hz")  
 	ratesum = 0
 end
+end
+@time main(ang,qe,wabs,wscatt)
+@time main(ang,qe,wabs,wscatt)

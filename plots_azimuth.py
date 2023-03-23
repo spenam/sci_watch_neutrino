@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib
 fig, ax= plt.subplots()
 #for i in [100,150,200,250,300,350]:
 for i in [150,250,350]:
